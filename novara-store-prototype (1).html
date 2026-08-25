@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOVARA — Smart Technology for Everyday Life</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08080b;
+  --bg-soft:#0f0f14;
+  --card:#17171d;
+  --card-hi:#1e1e26;
+  --border:rgba(255,255,255,.08);
+  --border-hi:rgba(255,255,255,.16);
+  --text:#f3f3f6;
+  --muted:#96969f;
+  --muted-2:#67676f;
+  --accent-a:#7c6cff;
+  --accent-b:#33d9e8;
+  --accent-grad: linear-gradient(120deg, var(--accent-a), var(--accent-b));
+  --danger:#ff6b6b;
+  --radius:18px;
+  --radius-sm:10px;
+  --maxw:1360px;
+  --ff-display:'Space Grotesk', sans-serif;
+  --ff-body:'Inter', sans-serif;
+  --ff-mono:'JetBrains Mono', monospace;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--ff-body);
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+img,svg{display:block; max-width:100%;}
+a{color:inherit; text-decoration:none;}
+button{font-family:inherit; cursor:pointer;}
+.wrap{max-width:var(--maxw); margin:0 auto; padding:0 32px;}
+.eyebrow{
+  font-family:var(--ff-mono);
+  font-size:12px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--accent-b);
+  display:flex; align-items:center; gap:10px;
+  margin-bottom:14px;
+}
+.eyebrow::before{content:''; width:16px; height:1px; background:var(--accent-b);}
+h1,h2,h3{font-family:var(--ff-display); font-weight:600; letter-spacing:-.02em;}
+.section-head{max-width:640px; margin-bottom:44px;}
+.section-head h2{font-size:clamp(28px,3.4vw,42px); line-height:1.1;}
+.section-head p{color:var(--muted); margin-top:14px; font-size:16px; line-height:1.6;}
+.reveal{opacity:0; transform:translateY(24px); transition:opacity .7s ease, transform .7s ease;}
+.reveal.in{opacity:1; transform:none;}
+
+/* ---------- placeholder media ---------- */
+.ph{
+  position:relative;
+  display:flex; align-items:center; justify-content:center;
+  overflow:hidden;
+  color:var(--muted-2);
+}
+.ph::before{
+  content:'';
+  position:absolute; inset:0;
+}
+.ph-label{
+  position:relative; z-index:2;
+  font-family:var(--ff-mono);
+  font-size:11px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,.4);
+  border:1px dashed rgba(255,255,255,.18);
+  padding:6px 10px;
+  border-radius:100px;
+  background:rgba(0,0,0,.3);
+  backdrop-filter:blur(6px);
+}
+.ph-icon{position:relative; z-index:1; opacity:.5;}
+.ph.tone-1::before{background:radial-gradient(circle at 30% 20%, #2a2740, #101014 70%);}
+.ph.tone-2::before{background:radial-gradient(circle at 70% 30%, #16333a, #0d1114 70%);}
+.ph.tone-3::before{background:radial-gradient(circle at 40% 70%, #2c2140, #0e0e12 70%);}
+.ph.tone-4::before{background:radial-gradient(circle at 60% 20%, #123234, #0c0f10 70%);}
+
+/* ---------- nav ---------- */
+header{
+  position:fixed; top:0; left:0; right:0; z-index:100;
+  backdrop-filter:blur(16px) saturate(140%);
+  background:rgba(8,8,11,.72);
+  border-bottom:1px solid transparent;
+  transition:padding .3s ease, border-color .3s ease, background .3s ease;
+}
+header.scrolled{ padding-top:0; border-color:var(--border); background:rgba(8,8,11,.92);}
+.navbar{display:flex; align-items:center; justify-content:space-between; padding:22px 32px; transition:padding .3s ease;}
+header.scrolled .navbar{padding:13px 32px;}
+.logo{font-family:var(--ff-display); font-weight:700; font-size:21px; letter-spacing:.02em; display:flex; align-items:center; gap:8px;}
+.logo .dot{width:7px; height:7px; border-radius:50%; background:var(--accent-grad); box-shadow:0 0 12px var(--accent-a);}
+.nav-links{display:flex; gap:34px; list-style:none;}
+.nav-links a{font-size:14.5px; color:var(--muted); position:relative; padding:6px 0;}
+.nav-links a:hover{color:var(--text);}
+.nav-links a::after{content:''; position:absolute; left:0; right:0; bottom:0; height:1px; background:var(--accent-grad); transform:scaleX(0); transform-origin:left; transition:transform .25s ease;}
+.nav-links a:hover::after{transform:scaleX(1);}
+.nav-actions{display:flex; align-items:center; gap:20px;}
+.icon-btn{position:relative; width:20px; height:20px; color:var(--muted); transition:color .2s;}
+.icon-btn:hover{color:var(--text);}
+.icon-btn svg{width:20px; height:20px;}
+.cart-count{
+  position:absolute; top:-8px; right:-9px;
+  background:var(--accent-grad); color:#0a0a0d;
+  font-family:var(--ff-mono); font-size:9.5px; font-weight:700;
+  width:16px; height:16px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+}
+.hamburger{display:none; flex-direction:column; gap:5px; width:22px;}
+.hamburger span{height:1.5px; background:var(--text); width:100%; transition:.3s;}
+
+/* ---------- hero ---------- */
+.hero{
+  position:relative; min-height:100vh;
+  display:flex; align-items:center;
+  padding:140px 32px 80px;
+  overflow:hidden;
+  background:
+    radial-gradient(60% 50% at 78% 18%, rgba(124,108,255,.22), transparent 60%),
+    radial-gradient(50% 40% at 15% 85%, rgba(51,217,232,.14), transparent 60%),
+    var(--bg);
+}
+.hero-glow{
+  position:absolute; width:600px; height:600px; border-radius:50%;
+  background:var(--accent-grad); filter:blur(140px); opacity:.15;
+  top:-200px; right:-150px; pointer-events:none;
+}
+.hero-inner{
+  max-width:var(--maxw); margin:0 auto; width:100%;
+  display:grid; grid-template-columns:1.05fr .95fr; gap:60px; align-items:center;
+}
+.hero-copy .eyebrow{margin-bottom:22px;}
+.hero-copy h1{
+  font-size:clamp(38px, 5.2vw, 68px);
+  line-height:1.03;
+  letter-spacing:-.03em;
+}
+.hero-copy h1 .grad{
+  background:var(--accent-grad);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.hero-copy p{
+  margin-top:24px; font-size:17px; color:var(--muted); max-width:460px; line-height:1.65;
+}
+.hero-btns{display:flex; gap:14px; margin-top:38px;}
+.btn{
+  font-family:var(--ff-body); font-weight:600; font-size:14px;
+  padding:15px 28px; border-radius:100px; border:1px solid transparent;
+  display:inline-flex; align-items:center; gap:8px;
+  transition:transform .2s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease;
+  letter-spacing:.01em;
+}
+.btn-primary{background:var(--accent-grad); color:#08080b;}
+.btn-primary:hover{transform:translateY(-2px); box-shadow:0 10px 30px -8px rgba(124,108,255,.6);}
+.btn-outline{border-color:var(--border-hi); color:var(--text); background:rgba(255,255,255,.03);}
+.btn-outline:hover{border-color:var(--accent-b); background:rgba(51,217,232,.06);}
+.btn-sm{padding:10px 18px; font-size:12.5px;}
+.hero-stats{display:flex; gap:34px; margin-top:52px; padding-top:28px; border-top:1px solid var(--border);}
+.hero-stats div b{display:block; font-family:var(--ff-display); font-size:22px;}
+.hero-stats div span{font-size:12px; color:var(--muted-2); font-family:var(--ff-mono); text-transform:uppercase; letter-spacing:.06em;}
+.hero-visual{position:relative; aspect-ratio:4/5; border-radius:28px; overflow:hidden; border:1px solid var(--border-hi);}
+.hero-visual .ph{height:100%;}
+.hero-visual .play-chip{
+  position:absolute; bottom:18px; left:18px; z-index:3;
+  display:flex; align-items:center; gap:10px;
+  background:rgba(8,8,11,.55); backdrop-filter:blur(10px);
+  border:1px solid var(--border-hi); border-radius:100px; padding:8px 14px 8px 8px;
+}
+.play-chip .dot-play{width:26px; height:26px; border-radius:50%; background:var(--accent-grad); display:flex; align-items:center; justify-content:center;}
+.play-chip span{font-size:11.5px; font-family:var(--ff-mono); letter-spacing:.04em;}
+.scroll-cue{position:absolute; bottom:26px; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:8px; color:var(--muted-2); font-family:var(--ff-mono); font-size:10px; letter-spacing:.1em;}
+.scroll-cue .line{width:1px; height:26px; background:linear-gradient(var(--accent-b), transparent); animation:scrollpulse 1.8s infinite;}
+@keyframes scrollpulse{0%{opacity:.2} 50%{opacity:1} 100%{opacity:.2}}
+
+/* ---------- categories ---------- */
+.section{padding:110px 0;}
+.section.tight{padding:70px 0;}
+.cat-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:18px;}
+.cat-card{
+  position:relative; border-radius:var(--radius); overflow:hidden;
+  aspect-ratio:3/4; border:1px solid var(--border);
+  cursor:pointer;
+}
+.cat-card .ph{height:100%; transition:transform .6s cubic-bezier(.2,.7,.2,1);}
+.cat-card:hover .ph{transform:scale(1.08);}
+.cat-overlay{
+  position:absolute; inset:0; z-index:2; display:flex; flex-direction:column; justify-content:flex-end; padding:22px;
+  background:linear-gradient(180deg, transparent 40%, rgba(8,8,11,.92) 100%);
+}
+.cat-overlay .tag{font-family:var(--ff-mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent-b); margin-bottom:8px;}
+.cat-overlay h3{font-size:20px; margin-bottom:6px;}
+.cat-overlay p{font-size:13px; color:var(--muted); line-height:1.5; margin-bottom:16px;}
+.cat-link{font-size:12.5px; font-weight:600; display:inline-flex; align-items:center; gap:6px; color:var(--text);}
+.cat-link svg{width:13px; height:13px; transition:transform .2s;}
+.cat-card:hover .cat-link svg{transform:translateX(4px);}
+
+/* ---------- product cards ---------- */
+.prod-row-head{display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:44px; flex-wrap:wrap; gap:20px;}
+.pgrid{display:grid; grid-template-columns:repeat(4,1fr); gap:20px;}
+.pcard{
+  background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+  overflow:hidden; position:relative; transition:border-color .25s ease, transform .25s ease;
+}
+.pcard:hover{border-color:var(--border-hi); transform:translateY(-4px);}
+.pcard-media{position:relative; aspect-ratio:1/1; overflow:hidden;}
+.pcard-media .ph{height:100%; transition:transform .5s ease;}
+.pcard:hover .pcard-media .ph{transform:scale(1.06);}
+.pcard-media .spotlight{
+  position:absolute; inset:0; z-index:2; pointer-events:none;
+  background:radial-gradient(220px circle at var(--mx,50%) var(--my,50%), rgba(124,108,255,.25), transparent 70%);
+  opacity:0; transition:opacity .3s ease;
+}
+.pcard:hover .spotlight{opacity:1;}
+.badge{
+  position:absolute; top:12px; left:12px; z-index:3;
+  font-family:var(--ff-mono); font-size:10px; letter-spacing:.06em; text-transform:uppercase;
+  padding:5px 10px; border-radius:100px; backdrop-filter:blur(6px);
+}
+.badge.sale{background:rgba(255,107,107,.18); color:#ff9b9b; border:1px solid rgba(255,107,107,.3);}
+.badge.best{background:rgba(51,217,232,.15); color:var(--accent-b); border:1px solid rgba(51,217,232,.3);}
+.wish-btn{
+  position:absolute; top:12px; right:12px; z-index:3;
+  width:32px; height:32px; border-radius:50%; border:1px solid var(--border-hi);
+  background:rgba(8,8,11,.5); backdrop-filter:blur(6px);
+  display:flex; align-items:center; justify-content:center; color:var(--muted);
+  transition:.2s;
+}
+.wish-btn:hover{color:#ff6b6b; border-color:#ff6b6b;}
+.wish-btn svg{width:15px; height:15px;}
+.quickview-btn{
+  position:absolute; left:12px; right:12px; bottom:-46px; z-index:3;
+  background:rgba(15,15,20,.85); backdrop-filter:blur(8px);
+  border:1px solid var(--border-hi); border-radius:100px;
+  padding:10px; text-align:center; font-size:12px; font-weight:600;
+  transition:bottom .3s ease;
+}
+.pcard:hover .quickview-btn{bottom:12px;}
+.pcard-body{padding:18px 18px 20px;}
+.pcard-cat{font-family:var(--ff-mono); font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted-2); margin-bottom:8px;}
+.pcard-body h4{font-family:var(--ff-body); font-weight:600; font-size:15px; margin-bottom:6px; line-height:1.35;}
+.stars{display:flex; align-items:center; gap:6px; margin-bottom:10px;}
+.stars svg{width:12px; height:12px; fill:var(--accent-b);}
+.stars span{font-size:11.5px; color:var(--muted-2); font-family:var(--ff-mono);}
+.price-row{display:flex; align-items:center; justify-content:space-between; margin-top:12px;}
+.price{display:flex; align-items:baseline; gap:8px;}
+.price b{font-family:var(--ff-display); font-size:17px;}
+.price .old{font-size:13px; color:var(--muted-2); text-decoration:line-through;}
+.price .off{font-size:11px; color:#ff9b9b; font-family:var(--ff-mono);}
+.add-btn{
+  width:38px; height:38px; border-radius:50%; border:1px solid var(--border-hi);
+  background:transparent; color:var(--text); display:flex; align-items:center; justify-content:center;
+  transition:.25s; flex-shrink:0;
+}
+.add-btn svg{width:16px; height:16px;}
+.add-btn:hover{background:var(--accent-grad); border-color:transparent; color:#08080b; transform:rotate(90deg);}
+
+/* ---------- video / see in action ---------- */
+.video-grid{display:grid; grid-template-columns:1.3fr 1fr 1fr; grid-template-rows:1fr 1fr; gap:16px; height:560px;}
+.video-grid .vcard:nth-child(1){grid-row:1/3;}
+.vcard{position:relative; border-radius:var(--radius); overflow:hidden; border:1px solid var(--border); cursor:pointer;}
+.vcard .ph{height:100%;}
+.vcard-overlay{position:absolute; inset:0; z-index:2; display:flex; flex-direction:column; justify-content:space-between; padding:18px; background:linear-gradient(180deg, rgba(8,8,11,.1), rgba(8,8,11,.75) 90%);}
+.vcard-top{display:flex; justify-content:flex-end;}
+.play-btn{width:46px; height:46px; border-radius:50%; background:rgba(255,255,255,.12); backdrop-filter:blur(8px); border:1px solid var(--border-hi); display:flex; align-items:center; justify-content:center; align-self:center; transition:.25s;}
+.vcard:hover .play-btn{background:var(--accent-grad);}
+.vcard:hover .play-btn svg{fill:#08080b;}
+.play-btn svg{width:16px; height:16px; fill:#fff; margin-left:2px;}
+.vcard-mid{display:flex; align-items:center; justify-content:center; flex:1;}
+.vcard-label h5{font-size:14.5px; font-weight:600;}
+.vcard-label p{font-size:11.5px; color:var(--muted); font-family:var(--ff-mono); margin-top:4px;}
+
+/* ---------- best sellers horizontal ---------- */
+.hscroll{display:flex; gap:18px; overflow-x:auto; padding-bottom:10px; scrollbar-width:none;}
+.hscroll::-webkit-scrollbar{display:none;}
+.hscroll .pcard{min-width:250px; flex:0 0 auto;}
+
+/* ---------- promo banner ---------- */
+.promo{
+  border-radius:24px; overflow:hidden; border:1px solid var(--border-hi);
+  display:grid; grid-template-columns:1fr 1fr; min-height:420px;
+  background:var(--bg-soft);
+}
+.promo-copy{padding:60px; display:flex; flex-direction:column; justify-content:center;}
+.promo-copy h2{font-size:clamp(30px,3.6vw,44px); line-height:1.08;}
+.promo-copy p{color:var(--muted); margin:18px 0 30px; font-size:15.5px; max-width:380px; line-height:1.6;}
+.promo-visual .ph{height:100%; min-height:420px;}
+
+/* ---------- feature tech sections ---------- */
+.tech-section{display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:center;}
+.tech-section.reverse{grid-template-columns:1fr 1fr;}
+.tech-section.reverse .tech-visual{order:2;}
+.tech-visual{position:relative; border-radius:var(--radius); overflow:hidden; aspect-ratio:5/4; border:1px solid var(--border-hi);}
+.tech-visual .ph{height:100%;}
+.tech-list{display:flex; flex-direction:column; gap:0; margin-top:30px;}
+.tech-item{display:flex; gap:16px; padding:18px 0; border-top:1px solid var(--border);}
+.tech-item:last-child{border-bottom:1px solid var(--border);}
+.tech-item .n{font-family:var(--ff-mono); font-size:12px; color:var(--accent-b); padding-top:2px;}
+.tech-item h5{font-size:14.5px; font-weight:600; margin-bottom:4px;}
+.tech-item p{font-size:13px; color:var(--muted); line-height:1.55;}
+
+/* ---------- why us ---------- */
+.why-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--border); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden;}
+.why-card{background:var(--bg); padding:36px 28px;}
+.why-icon{width:42px; height:42px; border-radius:12px; background:rgba(124,108,255,.1); border:1px solid rgba(124,108,255,.25); display:flex; align-items:center; justify-content:center; margin-bottom:20px; color:var(--accent-b);}
+.why-icon svg{width:20px; height:20px;}
+.why-card h5{font-size:15.5px; margin-bottom:8px;}
+.why-card p{font-size:13px; color:var(--muted); line-height:1.55;}
+
+/* ---------- reviews ---------- */
+.rev-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+.rev-card{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:28px;}
+.rev-top{display:flex; align-items:center; gap:12px; margin-bottom:16px;}
+.rev-avatar{width:40px; height:40px; border-radius:50%; background:var(--accent-grad); display:flex; align-items:center; justify-content:center; font-family:var(--ff-display); font-weight:700; color:#08080b; font-size:14px;}
+.rev-name{font-size:14px; font-weight:600;}
+.rev-product{font-size:11.5px; color:var(--muted-2); font-family:var(--ff-mono);}
+.rev-card p.body{font-size:14px; color:var(--muted); line-height:1.65; margin:14px 0;}
+.rev-demo-tag{font-family:var(--ff-mono); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted-2); border-top:1px dashed var(--border); padding-top:12px; margin-top:6px;}
+
+/* ---------- newsletter ---------- */
+.news{
+  border-radius:24px; padding:80px 40px; text-align:center; position:relative; overflow:hidden;
+  background:radial-gradient(60% 100% at 50% 0%, rgba(124,108,255,.18), transparent 70%), var(--bg-soft);
+  border:1px solid var(--border-hi);
+}
+.news h2{font-size:clamp(28px,3.4vw,40px);}
+.news p{color:var(--muted); margin:16px auto 32px; max-width:440px;}
+.news-form{display:flex; max-width:420px; margin:0 auto; gap:10px;}
+.news-form input{
+  flex:1; background:rgba(255,255,255,.04); border:1px solid var(--border-hi); border-radius:100px;
+  padding:15px 20px; color:var(--text); font-size:14px;
+}
+.news-form input:focus{outline:none; border-color:var(--accent-b);}
+.news-form input::placeholder{color:var(--muted-2);}
+
+/* ---------- footer ---------- */
+footer{border-top:1px solid var(--border); padding:80px 0 30px;}
+.foot-grid{display:grid; grid-template-columns:1.4fr repeat(3,1fr); gap:40px; padding-bottom:60px;}
+.foot-brand p{color:var(--muted); font-size:13.5px; line-height:1.6; margin:16px 0 22px; max-width:280px;}
+.social-row{display:flex; gap:10px;}
+.social-row a{width:34px; height:34px; border-radius:50%; border:1px solid var(--border-hi); display:flex; align-items:center; justify-content:center; transition:.2s;}
+.social-row a:hover{border-color:var(--accent-b); color:var(--accent-b);}
+.social-row svg{width:14px; height:14px;}
+.foot-col h6{font-family:var(--ff-mono); font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted-2); margin-bottom:18px;}
+.foot-col ul{list-style:none; display:flex; flex-direction:column; gap:11px;}
+.foot-col a{font-size:13.5px; color:var(--muted);}
+.foot-col a:hover{color:var(--text);}
+.foot-bottom{display:flex; justify-content:space-between; align-items:center; padding-top:30px; border-top:1px solid var(--border); flex-wrap:wrap; gap:16px;}
+.foot-bottom p{font-size:12px; color:var(--muted-2);}
+.pay-icons{display:flex; gap:8px;}
+.pay-icons span{font-family:var(--ff-mono); font-size:10px; border:1px solid var(--border-hi); border-radius:5px; padding:5px 8px; color:var(--muted-2);}
+
+/* ---------- cart drawer ---------- */
+.overlay{position:fixed; inset:0; background:rgba(6,6,8,.6); backdrop-filter:blur(3px); z-index:200; opacity:0; pointer-events:none; transition:opacity .3s ease;}
+.overlay.show{opacity:1; pointer-events:auto;}
+.drawer{
+  position:fixed; top:0; right:0; bottom:0; width:420px; max-width:92vw; background:var(--bg-soft);
+  border-left:1px solid var(--border-hi); z-index:201; transform:translateX(100%); transition:transform .35s cubic-bezier(.2,.8,.2,1);
+  display:flex; flex-direction:column;
+}
+.drawer.show{transform:translateX(0);}
+.drawer-head{display:flex; align-items:center; justify-content:space-between; padding:24px 26px; border-bottom:1px solid var(--border);}
+.drawer-head h3{font-size:17px;}
+.drawer-close{width:32px; height:32px; border-radius:50%; border:1px solid var(--border-hi); display:flex; align-items:center; justify-content:center; color:var(--muted);}
+.ship-bar{padding:16px 26px; border-bottom:1px solid var(--border);}
+.ship-bar p{font-size:12.5px; color:var(--muted); margin-bottom:10px;}
+.ship-bar p b{color:var(--accent-b);}
+.ship-track{height:5px; border-radius:100px; background:rgba(255,255,255,.06); overflow:hidden;}
+.ship-fill{height:100%; width:64%; background:var(--accent-grad); border-radius:100px;}
+.drawer-items{flex:1; overflow-y:auto; padding:10px 26px;}
+.drawer-item{display:flex; gap:14px; padding:18px 0; border-bottom:1px solid var(--border);}
+.drawer-item .ph{width:74px; height:74px; border-radius:12px; flex-shrink:0;}
+.di-info{flex:1;}
+.di-info h5{font-size:13.5px; margin-bottom:5px;}
+.di-info .di-meta{font-size:11.5px; color:var(--muted-2); font-family:var(--ff-mono);}
+.di-row{display:flex; align-items:center; justify-content:space-between; margin-top:10px;}
+.qty-ctrl{display:flex; align-items:center; gap:10px; border:1px solid var(--border-hi); border-radius:100px; padding:4px 10px;}
+.qty-ctrl button{background:none; border:none; color:var(--text); font-size:14px; width:16px;}
+.qty-ctrl span{font-size:12.5px; font-family:var(--ff-mono);}
+.di-price{font-family:var(--ff-display); font-size:13.5px;}
+.di-remove{font-size:11px; color:var(--muted-2); margin-top:8px; display:inline-block;}
+.di-remove:hover{color:#ff6b6b;}
+.drawer-foot{padding:22px 26px 28px; border-top:1px solid var(--border);}
+.subtotal-row{display:flex; justify-content:space-between; margin-bottom:16px; font-size:14.5px;}
+.subtotal-row b{font-family:var(--ff-display); font-size:18px;}
+.checkout-btn{width:100%; justify-content:center; padding:16px;}
+.empty-state{padding:60px 20px; text-align:center; color:var(--muted-2); font-size:13px; display:none;}
+
+/* ---------- toast ---------- */
+.toast{
+  position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(20px);
+  background:var(--card-hi); border:1px solid var(--border-hi); border-radius:100px;
+  padding:13px 22px; font-size:13px; z-index:300; opacity:0; pointer-events:none;
+  transition:.3s ease; display:flex; align-items:center; gap:10px;
+}
+.toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+.toast .dotc{width:7px; height:7px; border-radius:50%; background:var(--accent-b);}
+
+/* ---------- mobile ---------- */
+@media (max-width:1024px){
+  .cat-grid{grid-template-columns:repeat(2,1fr);}
+  .pgrid{grid-template-columns:repeat(2,1fr);}
+  .why-grid{grid-template-columns:repeat(2,1fr);}
+  .rev-grid{grid-template-columns:repeat(1,1fr);}
+  .foot-grid{grid-template-columns:1fr 1fr;}
+  .hero-inner{grid-template-columns:1fr;}
+  .hero-visual{aspect-ratio:16/9;}
+  .video-grid{grid-template-columns:1fr 1fr; grid-template-rows:auto; height:auto;}
+  .video-grid .vcard{aspect-ratio:4/3;}
+  .video-grid .vcard:nth-child(1){grid-row:auto; grid-column:1/3;}
+  .promo{grid-template-columns:1fr;}
+  .tech-section, .tech-section.reverse{grid-template-columns:1fr;}
+  .tech-section.reverse .tech-visual{order:0;}
+}
+@media (max-width:680px){
+  .nav-links{display:none;}
+  .hamburger{display:flex;}
+  .wrap{padding:0 20px;}
+  .cat-grid{grid-template-columns:1fr 1fr;}
+  .pgrid{grid-template-columns:1fr 1fr;}
+  .why-grid{grid-template-columns:1fr;}
+  .foot-grid{grid-template-columns:1fr; gap:36px;}
+  .section{padding:70px 0;}
+  .hero{padding:120px 20px 60px;}
+  .promo-copy{padding:36px;}
+  .drawer{width:100%;}
+  .hero-stats{flex-wrap:wrap; row-gap:16px;}
+}
+
+/* mobile off-canvas menu */
+.mnav{position:fixed; inset:0; background:var(--bg); z-index:150; display:flex; flex-direction:column; padding:100px 30px 40px; transform:translateY(-100%); transition:transform .35s ease; opacity:0;}
+.mnav.show{transform:translateY(0); opacity:1;}
+.mnav a{font-family:var(--ff-display); font-size:26px; padding:14px 0; border-bottom:1px solid var(--border);}
+</style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header id="siteHeader">
+  <div class="navbar">
+    <a href="#" class="logo"><span class="dot"></span>NOVARA</a>
+    <ul class="nav-links">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#shop">Shop</a></li>
+      <li><a href="#beauty">Beauty &amp; Personal Care</a></li>
+      <li><a href="#hair">Hair Tools</a></li>
+      <li><a href="#kitchen">Kitchen</a></li>
+      <li><a href="#electronics">Electronics</a></li>
+      <li><a href="#bestsellers">Best Sellers</a></li>
+      <li><a href="#new">New Arrivals</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="icon-btn" id="searchBtn" aria-label="Search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      </button>
+      <button class="icon-btn" aria-label="Account">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6"/></svg>
+      </button>
+      <button class="icon-btn" aria-label="Wishlist">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20s-7-4.5-9.5-9A5.5 5.5 0 0112 5a5.5 5.5 0 019.5 6c-2.5 4.5-9.5 9-9.5 9z"/></svg>
+      </button>
+      <button class="icon-btn" id="cartBtn" aria-label="Cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 5h2l2.5 12.5a2 2 0 002 1.5h8a2 2 0 002-2L21 8H6"/><circle cx="9" cy="21" r="1"/><circle cx="18" cy="21" r="1"/></svg>
+        <span class="cart-count" id="cartCount">2</span>
+      </button>
+      <button class="hamburger" id="hamburgerBtn" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<div class="mnav" id="mNav">
+  <a href="#home">Home</a>
+  <a href="#shop">Shop</a>
+  <a href="#beauty">Beauty &amp; Personal Care</a>
+  <a href="#hair">Hair Tools</a>
+  <a href="#kitchen">Kitchen</a>
+  <a href="#electronics">Electronics</a>
+  <a href="#bestsellers">Best Sellers</a>
+</div>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="home">
+  <div class="hero-glow"></div>
+  <div class="hero-inner">
+    <div class="hero-copy reveal in">
+      <div class="eyebrow">Fall / Winter Collection</div>
+      <h1>Smart technology<br>for <span class="grad">everyday life</span></h1>
+      <p>Discover premium beauty, kitchen and lifestyle electronics designed to make everyday life easier — engineered with the same precision as the routines they simplify.</p>
+      <div class="hero-btns">
+        <a href="#bestsellers" class="btn btn-primary">Shop Now
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a href="#shop" class="btn btn-outline">Explore Products</a>
+      </div>
+      <div class="hero-stats">
+        <div><b>240K+</b><span>Devices Shipped</span></div>
+        <div><b>4.8/5</b><span>Avg. Rating</span></div>
+        <div><b>60+</b><span>Countries Served</span></div>
+      </div>
+    </div>
+    <div class="hero-visual reveal in">
+      <div class="ph tone-1" style="height:100%">
+        <span class="ph-icon">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M12 2a5 5 0 015 5c0 3-2 5-5 9-3-4-5-6-5-9a5 5 0 015-5z"/><circle cx="12" cy="7" r="2"/></svg>
+        </span>
+        <span class="ph-label" style="position:absolute; top:18px; left:18px;">Hero video — replace with product loop</span>
+      </div>
+      <div class="play-chip">
+        <span class="dot-play">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="#08080b"><path d="M8 5v14l11-7z"/></svg>
+        </span>
+        <span>WATCH THE FILM · 0:42</span>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-cue"><span>SCROLL</span><span class="line"></span></div>
+</section>
+
+<!-- ============ CATEGORIES ============ -->
+<section class="section" id="shop">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">Shop by category</div>
+      <h2>Everything runs on precision engineering</h2>
+      <p>Four categories, one design language — devices built for the routines you repeat every day.</p>
+    </div>
+    <div class="cat-grid">
+      <div class="cat-card reveal" id="beauty">
+        <div class="ph tone-1" style="height:100%"><span class="ph-label">Category image</span></div>
+        <div class="cat-overlay">
+          <div class="tag">04 devices</div>
+          <h3>Beauty &amp; Personal Care</h3>
+          <p>Laser hair removal, facial devices &amp; personal-care electronics.</p>
+          <span class="cat-link">Explore <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+      </div>
+      <div class="cat-card reveal" id="hair">
+        <div class="ph tone-2" style="height:100%"><span class="ph-label">Category image</span></div>
+        <div class="cat-overlay">
+          <div class="tag">06 devices</div>
+          <h3>Hair Styling</h3>
+          <p>Dryers, straighteners, curlers &amp; professional trimmers.</p>
+          <span class="cat-link">Explore <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+      </div>
+      <div class="cat-card reveal" id="kitchen">
+        <div class="ph tone-3" style="height:100%"><span class="ph-label">Category image</span></div>
+        <div class="cat-overlay">
+          <div class="tag">05 devices</div>
+          <h3>Smart Kitchen</h3>
+          <p>Food prep, smart tools &amp; everyday cooking appliances.</p>
+          <span class="cat-link">Explore <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+      </div>
+      <div class="cat-card reveal" id="electronics">
+        <div class="ph tone-4" style="height:100%"><span class="ph-label">Category image</span></div>
+        <div class="cat-overlay">
+          <div class="tag">08 devices</div>
+          <h3>Home &amp; Lifestyle</h3>
+          <p>Smart household products for modern everyday living.</p>
+          <span class="cat-link">Explore <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FEATURED PRODUCTS ============ -->
+<section class="section" style="background:var(--bg-soft);">
+  <div class="wrap">
+    <div class="prod-row-head reveal">
+      <div class="section-head" style="margin-bottom:0;">
+        <div class="eyebrow">Featured</div>
+        <h2>This season's edit</h2>
+      </div>
+      <a href="#" class="btn btn-outline btn-sm">View all products</a>
+    </div>
+    <div class="pgrid" id="featuredGrid"></div>
+  </div>
+</section>
+
+<!-- ============ SEE IT IN ACTION ============ -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">See it in action</div>
+      <h2>Built to perform, not just look good</h2>
+      <p>Short demos of the devices doing what they're designed for — replace with Shopify-hosted MP4s or product videos.</p>
+    </div>
+    <div class="video-grid reveal">
+      <div class="vcard"><div class="ph tone-1" style="height:100%"></div>
+        <div class="vcard-overlay">
+          <div class="vcard-top"><div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
+          <div class="vcard-mid"></div>
+          <div class="vcard-label"><h5>Laser Hair Removal — Demo</h5><p>00:38 · REPLACE VIDEO</p></div>
+        </div>
+      </div>
+      <div class="vcard"><div class="ph tone-2" style="height:100%"></div>
+        <div class="vcard-overlay">
+          <div class="vcard-top"><div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
+          <div class="vcard-mid"></div>
+          <div class="vcard-label"><h5>Pro Hair Dryer — In Use</h5><p>00:21 · REPLACE VIDEO</p></div>
+        </div>
+      </div>
+      <div class="vcard"><div class="ph tone-3" style="height:100%"></div>
+        <div class="vcard-overlay">
+          <div class="vcard-top"><div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
+          <div class="vcard-mid"></div>
+          <div class="vcard-label"><h5>Smart Kitchen Gadget</h5><p>00:29 · REPLACE VIDEO</p></div>
+        </div>
+      </div>
+      <div class="vcard"><div class="ph tone-4" style="height:100%"></div>
+        <div class="vcard-overlay">
+          <div class="vcard-top"><div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
+          <div class="vcard-mid"></div>
+          <div class="vcard-label"><h5>Facial Beauty Device</h5><p>00:33 · REPLACE VIDEO</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BEST SELLERS ============ -->
+<section class="section" id="bestsellers" style="background:var(--bg-soft);">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">Trending now</div>
+      <h2>Best sellers this month</h2>
+    </div>
+    <div class="hscroll reveal" id="bestGrid"></div>
+  </div>
+</section>
+
+<!-- ============ PROMO BANNER ============ -->
+<section class="section tight">
+  <div class="wrap">
+    <div class="promo reveal">
+      <div class="promo-copy">
+        <div class="eyebrow">Limited drop</div>
+        <h2>Upgrade your everyday</h2>
+        <p>Smart technology. Better routines. Better living. Fifteen devices, one seamless upgrade to how your day runs.</p>
+        <a href="#" class="btn btn-primary" style="width:fit-content;">Shop the Collection</a>
+      </div>
+      <div class="promo-visual"><div class="ph tone-2" style="height:100%"><span class="ph-label">Lifestyle image/video</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BEAUTY MEETS TECHNOLOGY ============ -->
+<section class="section">
+  <div class="wrap">
+    <div class="tech-section">
+      <div class="tech-copy reveal">
+        <div class="eyebrow">Beauty technology</div>
+        <h2>Beauty meets technology</h2>
+        <p style="color:var(--muted); margin-top:16px; font-size:15.5px; max-width:440px; line-height:1.6;">Professional-inspired beauty devices designed for your everyday routine — from at-home laser treatments to salon-grade styling.</p>
+        <div class="tech-list">
+          <div class="tech-item"><span class="n">01</span><div><h5>Laser Hair Removal</h5><p>IPL technology calibrated for safe, consistent at-home use.</p></div></div>
+          <div class="tech-item"><span class="n">02</span><div><h5>Facial Devices</h5><p>LED and micro-current tools for daily skincare routines.</p></div></div>
+          <div class="tech-item"><span class="n">03</span><div><h5>Styling Machines</h5><p>Salon-grade heat and airflow control in a compact form.</p></div></div>
+        </div>
+      </div>
+      <div class="tech-visual reveal"><div class="ph tone-1" style="height:100%"><span class="ph-label">Beauty-tech photography</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SMARTER KITCHEN ============ -->
+<section class="section" style="background:var(--bg-soft);">
+  <div class="wrap">
+    <div class="tech-section reverse">
+      <div class="tech-visual reveal"><div class="ph tone-3" style="height:100%"><span class="ph-label">Kitchen lifestyle photography</span></div></div>
+      <div class="tech-copy reveal">
+        <div class="eyebrow">Smart kitchen</div>
+        <h2>Smarter kitchen. Easier life.</h2>
+        <p style="color:var(--muted); margin-top:16px; font-size:15.5px; max-width:440px; line-height:1.6;">Modern electronic tools that shrink prep time without shrinking flavor — designed for real kitchens, not showrooms.</p>
+        <a href="#" class="btn btn-outline" style="margin-top:30px; width:fit-content;">Explore Kitchen</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHY CHOOSE US ============ -->
+<section class="section">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">Why Novara</div>
+      <h2>Built around trust, not just tech</h2>
+    </div>
+    <div class="why-grid reveal">
+      <div class="why-card">
+        <div class="why-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2l3 6 6 1-4.5 4.5L18 20l-6-3-6 3 1.5-6.5L3 9l6-1z"/></svg></div>
+        <h5>Premium Products</h5><p>Carefully selected products for modern lifestyles.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6z"/></svg></div>
+        <h5>Secure Checkout</h5><p>Safe and secure payment experience.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 7h11v8H3zM14 10h4l3 3v2h-7z"/><circle cx="7" cy="18" r="1.6"/><circle cx="17.5" cy="18" r="1.6"/></svg></div>
+        <h5>Fast Delivery</h5><p>Reliable shipping and order tracking.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 22s8-4.5 8-11V5l-8-3-8 3v6c0 6.5 8 11 8 11z"/></svg></div>
+        <h5>Customer Support</h5><p>We're here to help whenever you need us.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ REVIEWS ============ -->
+<section class="section" style="background:var(--bg-soft);">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">Reviews</div>
+      <h2>What our customers say</h2>
+    </div>
+    <div class="rev-grid reveal" id="reviewGrid"></div>
+  </div>
+</section>
+
+<!-- ============ NEWSLETTER ============ -->
+<section class="section tight">
+  <div class="wrap">
+    <div class="news reveal">
+      <div class="eyebrow" style="justify-content:center;">Stay in the loop</div>
+      <h2>Get the latest drops</h2>
+      <p>Be the first to discover new products, exclusive offers and special deals.</p>
+      <form class="news-form" onsubmit="event.preventDefault(); showToast('Subscribed — welcome to Novara.');">
+        <input type="email" placeholder="Enter your email" required>
+        <button class="btn btn-primary" type="submit">Subscribe</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a href="#" class="logo"><span class="dot"></span>NOVARA</a>
+        <p>Smart beauty, kitchen and lifestyle electronics engineered for everyday routines.</p>
+        <div class="social-row">
+          <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+          <a href="#" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 3v10.5a3.5 3.5 0 11-3-3.46V7a7 7 0 007 7"/></svg></a>
+          <a href="#" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="6" width="18" height="12" rx="3"/><path d="M11 10l4 2-4 2z"/></svg></a>
+        </div>
+      </div>
+      <div class="foot-col">
+        <h6>Shop</h6>
+        <ul><li><a href="#">All Products</a></li><li><a href="#">Beauty</a></li><li><a href="#">Hair Tools</a></li><li><a href="#">Kitchen</a></li><li><a href="#">Electronics</a></li><li><a href="#">Best Sellers</a></li><li><a href="#">New Arrivals</a></li></ul>
+      </div>
+      <div class="foot-col">
+        <h6>Customer Care</h6>
+        <ul><li><a href="#">Contact Us</a></li><li><a href="#">Shipping Information</a></li><li><a href="#">Returns &amp; Refunds</a></li><li><a href="#">FAQ</a></li><li><a href="#">Order Tracking</a></li></ul>
+      </div>
+      <div class="foot-col">
+        <h6>Company</h6>
+        <ul><li><a href="#">About Us</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms &amp; Conditions</a></li></ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <p>&copy; 2026 Novara. All rights reserved.</p>
+      <div class="pay-icons"><span>VISA</span><span>MC</span><span>AMEX</span><span>PAYPAL</span><span>SHOP PAY</span></div>
+    </div>
+  </div>
+</footer>
+
+<!-- ============ CART DRAWER ============ -->
+<div class="overlay" id="overlay"></div>
+<div class="drawer" id="cartDrawer">
+  <div class="drawer-head">
+    <h3>Your Cart (<span id="drawerCount">2</span>)</h3>
+    <button class="drawer-close" id="closeCart">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <div class="ship-bar">
+    <p>You're <b>$18.00</b> away from free shipping</p>
+    <div class="ship-track"><div class="ship-fill"></div></div>
+  </div>
+  <div class="drawer-items" id="drawerItems"></div>
+  <div class="drawer-foot">
+    <div class="subtotal-row"><span>Subtotal</span><b id="subtotalVal">$186.00</b></div>
+    <a href="#" class="btn btn-primary checkout-btn">Checkout</a>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span class="dotc"></span><span id="toastText">Added to cart</span></div>
+
+<script>
+/* ---------------- data ---------------- */
+const PRODUCTS = {
+  featured:[
+    {name:'AeroFlow Pro Hair Dryer', cat:'Hair Tools', price:129, old:159, off:'19% OFF', rating:4.8, reviews:212, tone:'tone-2', badge:{type:'best',text:'Best Seller'}},
+    {name:'LumaClear IPL Device', cat:'Beauty & Personal Care', price:249, old:null, off:null, rating:4.6, reviews:98, tone:'tone-1', badge:null},
+    {name:'PulseGlow Facial Wand', cat:'Beauty & Personal Care', price:89, old:110, off:'19% OFF', rating:4.7, reviews:156, tone:'tone-1', badge:{type:'sale',text:'Sale'}},
+    {name:'ChefEdge Smart Blender', cat:'Kitchen', price:99, old:null, off:null, rating:4.5, reviews:64, tone:'tone-3', badge:null},
+  ],
+  best:[
+    {name:'AeroFlow Pro Hair Dryer', cat:'Hair Tools', price:129, old:159, off:'19% OFF', rating:4.8, reviews:212, tone:'tone-2', badge:{type:'best',text:'Best Seller'}},
+    {name:'VoltCurl Auto Styler', cat:'Hair Tools', price:79, old:null, off:null, rating:4.4, reviews:87, tone:'tone-2', badge:{type:'best',text:'Best Seller'}},
+    {name:'LumaClear IPL Device', cat:'Beauty & Personal Care', price:249, old:299, off:'17% OFF', rating:4.6, reviews:98, tone:'tone-1', badge:{type:'best',text:'Best Seller'}},
+    {name:'NimbusMix Food Processor', cat:'Kitchen', price:119, old:null, off:null, rating:4.5, reviews:41, tone:'tone-3', badge:{type:'best',text:'Best Seller'}},
+    {name:'FlatLine Ceramic Straightener', cat:'Hair Tools', price:69, old:89, off:'22% OFF', rating:4.3, reviews:133, tone:'tone-4', badge:{type:'best',text:'Best Seller'}},
+    {name:'CrispAir Mini Fryer', cat:'Kitchen', price:139, old:null, off:null, rating:4.6, reviews:52, tone:'tone-3', badge:{type:'best',text:'Best Seller'}},
+  ]
+};
+const REVIEWS = [
+  {name:'M. Alvarez', initials:'MA', product:'AeroFlow Pro Hair Dryer', rating:5, body:'Cuts my drying time in half and the noise level is so much lower than my old one. Feels genuinely premium.'},
+  {name:'S. Okafor', initials:'SO', product:'LumaClear IPL Device', rating:5, body:'Easy to use even for a first-timer. The app-free interface and clear settings made me confident using it at home.'},
+  {name:'J. Park', initials:'JP', product:'ChefEdge Smart Blender', rating:4, body:'Quiet, powerful, and the parts are dishwasher-safe which honestly sold me. Wish the cord was a bit longer.'},
+];
+
+function starRow(rating){
+  let s='';
+  for(let i=0;i<5;i++){
+    s += `<svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.3 6.9.6-5.2 4.6 1.6 6.8L12 16.9 5.8 20.3l1.6-6.8L2.2 8.9l6.9-.6z" fill="${i<Math.round(rating)?'currentColor':'none'}" stroke="currentColor" stroke-width="1"/></svg>`;
+  }
+  return s;
+}
+
+function productCard(p){
+  const badge = p.badge ? `<span class="badge ${p.badge.type}">${p.badge.text}</span>` : '';
+  const oldPrice = p.old ? `<span class="old">$${p.old}</span><span class="off">${p.off}</span>` : '';
+  return `
+  <div class="pcard">
+    <div class="pcard-media">
+      ${badge}
+      <button class="wish-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20s-7-4.5-9.5-9A5.5 5.5 0 0112 5a5.5 5.5 0 019.5 6c-2.5 4.5-9.5 9-9.5 9z"/></svg></button>
+      <div class="ph ${p.tone}" style="height:100%"><span class="ph-label">Product photo</span></div>
+      <div class="spotlight"></div>
+      <div class="quickview-btn">Quick View</div>
+    </div>
+    <div class="pcard-body">
+      <div class="pcard-cat">${p.cat}</div>
+      <h4>${p.name}</h4>
+      <div class="stars">${starRow(p.rating)}<span>${p.rating} (${p.reviews})</span></div>
+      <div class="price-row">
+        <div class="price"><b>$${p.price}</b>${oldPrice}</div>
+        <button class="add-btn" onclick="addToCart('${p.name.replace(/'/g,"")}', ${p.price}, '${p.tone}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+document.getElementById('featuredGrid').innerHTML = PRODUCTS.featured.map(productCard).join('');
+document.getElementById('bestGrid').innerHTML = PRODUCTS.best.map(productCard).join('');
+
+document.getElementById('reviewGrid').innerHTML = REVIEWS.map(r=>`
+  <div class="rev-card">
+    <div class="rev-top">
+      <div class="rev-avatar">${r.initials}</div>
+      <div><div class="rev-name">${r.name}</div><div class="rev-product">${r.product}</div></div>
+    </div>
+    <div class="stars">${starRow(r.rating)}</div>
+    <p class="body">"${r.body}"</p>
+    <div class="rev-demo-tag">Demo review — replace with verified customer reviews</div>
+  </div>
+`).join('');
+
+/* ---------------- cart state ---------------- */
+let cart = [
+  {name:'AeroFlow Pro Hair Dryer', price:129, tone:'tone-2', qty:1},
+  {name:'LumaClear IPL Device', price:57, tone:'tone-1', qty:1},
+];
+function renderCart(){
+  const itemsEl = document.getElementById('drawerItems');
+  if(cart.length===0){
+    itemsEl.innerHTML = `<div class="empty-state" style="display:block;">Your cart is empty.<br><br><a href="#shop" class="btn btn-outline btn-sm">Continue shopping</a></div>`;
+  } else {
+    itemsEl.innerHTML = cart.map((it,i)=>`
+      <div class="drawer-item">
+        <div class="ph ${it.tone}"></div>
+        <div class="di-info">
+          <h5>${it.name}</h5>
+          <div class="di-meta">SKU-0${i+1}</div>
+          <div class="di-row">
+            <div class="qty-ctrl">
+              <button onclick="changeQty(${i},-1)">–</button>
+              <span>${it.qty}</span>
+              <button onclick="changeQty(${i},1)">+</button>
+            </div>
+            <div class="di-price">$${it.price*it.qty}</div>
+          </div>
+          <a class="di-remove" onclick="removeItem(${i})">Remove</a>
+        </div>
+      </div>`).join('');
+  }
+  const count = cart.reduce((a,b)=>a+b.qty,0);
+  const subtotal = cart.reduce((a,b)=>a+b.price*b.qty,0);
+  document.getElementById('cartCount').textContent = count;
+  document.getElementById('drawerCount').textContent = count;
+  document.getElementById('subtotalVal').textContent = '$'+subtotal.toFixed(2);
+}
+function changeQty(i,d){ cart[i].qty = Math.max(1, cart[i].qty+d); renderCart(); }
+function removeItem(i){ cart.splice(i,1); renderCart(); }
+function addToCart(name, price, tone){
+  const existing = cart.find(c=>c.name===name);
+  if(existing){ existing.qty++; } else { cart.push({name, price, tone, qty:1}); }
+  renderCart();
+  openCart();
+  showToast(`Added "${name}" to cart`);
+}
+
+/* ---------------- drawer open/close ---------------- */
+const drawer = document.getElementById('cartDrawer');
+const overlay = document.getElementById('overlay');
+function openCart(){ drawer.classList.add('show'); overlay.classList.add('show'); }
+function closeCartFn(){ drawer.classList.remove('show'); overlay.classList.remove('show'); closeMobileMenu(); }
+document.getElementById('cartBtn').addEventListener('click', openCart);
+document.getElementById('closeCart').addEventListener('click', closeCartFn);
+overlay.addEventListener('click', ()=>{ closeCartFn(); });
+
+/* ---------------- toast ---------------- */
+let toastTimer;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  document.getElementById('toastText').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 2600);
+}
+
+/* ---------------- header scroll state ---------------- */
+const header = document.getElementById('siteHeader');
+window.addEventListener('scroll', ()=>{
+  header.classList.toggle('scrolled', window.scrollY > 40);
+});
+
+/* ---------------- mobile menu ---------------- */
+const mNav = document.getElementById('mNav');
+const hamburgerBtn = document.getElementById('hamburgerBtn');
+function closeMobileMenu(){ mNav.classList.remove('show'); }
+hamburgerBtn.addEventListener('click', ()=>{ mNav.classList.toggle('show'); });
+mNav.querySelectorAll('a').forEach(a=>a.addEventListener('click', closeMobileMenu));
+
+/* ---------------- search (predictive mock) ---------------- */
+document.getElementById('searchBtn').addEventListener('click', ()=>{
+  showToast('Search: try "hair dryer", "laser hair removal", "kitchen"');
+});
+
+/* ---------------- reveal on scroll ---------------- */
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+/* ---------------- spotlight cursor glow on product cards ---------------- */
+document.addEventListener('mousemove', (e)=>{
+  const card = e.target.closest ? e.target.closest('.pcard-media') : null;
+  if(card){
+    const rect = card.getBoundingClientRect();
+    card.style.setProperty('--mx', (e.clientX-rect.left)+'px');
+    card.style.setProperty('--my', (e.clientY-rect.top)+'px');
+  }
+});
+
+renderCart();
+</script>
+</body>
+</html>
